@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+//to-do-list lavet af Rune og Magnus
+
+>>>>>>> feature
 #include <iostream>
 #include <string>
 #include <vector> //Works like arrays, but can be resized
@@ -30,7 +35,10 @@ void displayKanbanBoard(std::array<std::vector<Task>, 4> &kanbanBoard)
         std::cout << std::endl;
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature
 Task addTask(std::array<std::vector<Task>, 4> &kanbanBoard)//, bool completed=false) 
     //const tells the compiler that the function will not modify the string
     //& is a reference to the string, which is more efficient than passing the string by value
