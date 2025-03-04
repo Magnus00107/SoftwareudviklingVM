@@ -9,7 +9,27 @@ struct Task {
 };
 
 // Display the current state of the kanban board.
-
+void displayKanbanBoard(std::array<std::vector<Task>, 4> &kanbanBoard)
+{
+    std::array<const char*, 4> stages = {"Backlog", "Doing", "Review", "Done"};
+    std::cout <<"Kanban Board\n";
+    for (size_t i = 0; i < kanbanBoard.size(); i++)
+    {
+        std::cout << stages[i] << ":\n";
+        if (kanbanBoard[i].empty())
+        {
+            std::cout <<"No tasks\n";
+        }
+        else 
+        {
+            for (size_t j = 0; j < kanbanBoard[i].size(); ++j)
+            {
+                std::cout << " " << j << ". " << kanbanBoard[i][j].descr << "\n";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
 Task addTask(std::array<std::vector<Task>, 4> &kanbanBoard)//, bool completed=false) 
     //const tells the compiler that the function will not modify the string
     //& is a reference to the string, which is more efficient than passing the string by value
