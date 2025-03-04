@@ -1,3 +1,5 @@
+//to-do-list lavet af Rune og Magnus
+
 #include <iostream>
 #include <string>
 #include <vector> //Works like arrays, but can be resized
