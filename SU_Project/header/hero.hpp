@@ -15,9 +15,9 @@ class Hero {
 
     void levelUp();
 
-    void isAlive() const;
+    //Getter function
+    bool isAlive() const;
 
-    //Getter functions
     string getName() const;
 
     int getLevel();
@@ -29,6 +29,7 @@ class Hero {
     int getAtkDmg();
     
     private:
+        bool alive;
         string name;
         int xp;
         int level;
