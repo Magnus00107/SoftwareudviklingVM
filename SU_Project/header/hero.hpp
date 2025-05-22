@@ -35,5 +35,3 @@ class Hero {
         int hp;
         int atkdmg;
 };
-
-//
