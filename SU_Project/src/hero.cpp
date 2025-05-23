@@ -3,7 +3,7 @@
 #include <iostream>
 using namespace std;
 
-Hero::Hero(const std::string& name)
+Hero::Hero(const string& name)
     //Initialiserings listen bruges til at initialisere klassens
     //datafelter før konstruktørens krop kører
     : name(name), xp(0), level(1), hp(10), atkdmg(2) ,alive(true){}    
