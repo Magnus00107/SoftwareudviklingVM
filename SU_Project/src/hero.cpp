@@ -13,8 +13,8 @@ Hero::Hero(const string& name)
 
 void Hero::attack(Enemy &enemy)
 {
-    cout << name << " attacks " << enemy.getName() << " and damages" 
-    << getAtkDmg() << "damage!" << endl;
+    cout << name << " attacks " << enemy.getName() << " and deals " 
+    << getAtkDmg() << " damage!" << endl;
     enemy.takeDamage(getAtkDmg()); 
 }
 
@@ -46,6 +46,8 @@ void Hero::levelUp()
     level += 1;
     int minusxp = -(level-1) * 1000;
     changeXP(minusxp);
+    setHp(10+(level-1)*2);
+    setAtkDmg(getAtkDmg()+ 1);
     cout << name << "has leveled up to " << level << endl;
 }
 
@@ -114,6 +116,44 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
     }
     throw runtime_error("Hero with name " + name + "not found.");
 }
+
+void Hero::deleteCharacter() const
+{
+    string line;
+    vector<string> lines;
+    ifstream infile("saves/saves.txt");
+
+    while (getline(infile, line))
+    {
+        istringstream iss(line);
+        string currentName;
+        iss >> currentName;
+        
+        if (currentName != name)
+        {
+            lines.push_back(line);
+        }
+    }
+    infile.close();
+    //Reopen the file to write back the lines we kept
+    ofstream outfile("saves/saves.txt");
+    for (const string &l : lines)
+    {
+        outfile << l << endl;
+    }
+    outfile.close();
+}
+
+void Hero::printStats() const {
+    std::cout << "\n=== Hero Stats ===\n";
+    std::cout << "Name:    " << name << std::endl;
+    std::cout << "Level:   " << level << std::endl;
+    std::cout << "XP:      " << xp << std::endl;
+    std::cout << "HP:      " << hp << std::endl;
+    std::cout << "Attack:  " << atkdmg << std::endl;
+    std::cout << "===================\n\n";
+}
+
 
 bool Hero::isAlive() const
 {

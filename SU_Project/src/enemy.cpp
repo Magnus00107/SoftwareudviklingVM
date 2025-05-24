@@ -8,8 +8,8 @@ Enemy::Enemy(const string& name, int hp, int atkdmg, int xp, bool alive)
 
 void Enemy::attack(Hero &hero)
 {
-    cout << name << " attacks " << hero.getName() << " and damages" 
-    << getAtkDmg() << "damage!" << endl;
+    cout << name << " attacks " << hero.getName() << " and deals " 
+    << getAtkDmg() << " damage!" << endl;
     hero.takeDamage(getAtkDmg()); 
 }
 
