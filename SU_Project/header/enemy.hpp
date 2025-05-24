@@ -20,6 +20,7 @@ class Enemy {
         int getHp();
 
         int getAtkDmg();
+
     private:
         string name;
         int xp;

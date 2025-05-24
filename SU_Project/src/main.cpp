@@ -2,17 +2,33 @@
 #include <vector>
 #include "hero.hpp"
 #include "enemy.hpp"
+#include <fstream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
-void saves()
-{
-
-}
-
 void game(Hero &hero)
 {
+    cout << "The game has started" << endl;
+    hero.saveCharacter();
+    //Create function to exit and save
+}
 
+void saves()
+{
+    string name;
+    string line;
+    ifstream savefile("saves/saves.txt");
+    while (getline(savefile, line))
+    {
+        cout << line << endl;
+    }
+    cout << " " << endl;
+    cout << "Enter name of save to play: ";
+    cin >> name;
+    Hero hero = Hero::loadFromFile(name);
+    game(hero);
 }
 
 void newGame()
@@ -38,9 +54,8 @@ void newGame()
             cout << "Invalid choice. Returning to main menu." << endl;
             break;    
     }
-
-    Hero hero1(name);
-    game(hero1);
+    Hero hero(name);
+    game(hero);
 }
 
 void mainMenu()
@@ -53,6 +68,7 @@ void mainMenu()
     {
         case 1:
             cout << "list of saved games" << endl;
+            saves();
             break;
 
         case 2:
@@ -69,5 +85,7 @@ void mainMenu()
 
 int main()
 {
+
     mainMenu();
+
 }
