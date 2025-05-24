@@ -2,6 +2,7 @@
 #include <vector>
 #include "hero.hpp"
 #include "enemy.hpp"
+#include "enemyfactory.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -156,5 +157,15 @@ void mainMenu()
 
 int main()
 {
+    EnemyFactory ef1; // Adjusted to match the default constructor
+    
+    for (size_t i = 0; i < ef1.createEnemy(3,3).size(); i++)
+    {
+        if (ef1.createEnemy(3,3)[i].isAlive() == true)
+        {
+            cout << i+1 << ". " << ef1.createEnemy(3,3)[i].getName() << endl;
+        }
+    }
+    
     mainMenu();
 }
