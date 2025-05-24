@@ -21,6 +21,10 @@ class Hero {
     static Hero loadFromFile(const string name);
         //Bruges til at kalde funktionen uden først at have et objekt af typen Hero.
 
+    void deleteCharacter() const;
+
+    void printStats() const;
+
     //Getter function
     bool isAlive() const;
 
