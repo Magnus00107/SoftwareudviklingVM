@@ -15,6 +15,12 @@ class Hero {
 
     void levelUp();
 
+    void saveCharacter() const; 
+        //const bruges når vi ikke vil ændre objeket's tilstand
+
+    static Hero loadFromFile(const string name);
+        //Bruges til at kalde funktionen uden først at have et objekt af typen Hero.
+
     //Getter function
     bool isAlive() const;
 
@@ -27,6 +33,15 @@ class Hero {
     int getHp();
 
     int getAtkDmg();
+
+    //Setter functions:
+    void setLevel(int newLevel);
+
+    void setXp(int newXp);
+
+    void setHp(int newHp);
+
+    void setAtkDmg(int newAtkDmg);
     
     private:
         bool alive;
