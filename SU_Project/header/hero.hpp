@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 using namespace std;
 
@@ -30,13 +31,15 @@ class Hero {
 
     string getName() const;
 
-    int getLevel();
+    int getLevel() const;
 
-    int getXp();
+    int getXp() const;
 
-    int getHp();
+    int getHp() const;
 
-    int getAtkDmg();
+    int getAtkDmg() const;
+
+    int getGold() const;
 
     //Setter functions:
     void setLevel(int newLevel);
@@ -46,6 +49,8 @@ class Hero {
     void setHp(int newHp);
 
     void setAtkDmg(int newAtkDmg);
+
+    void setGold(int newGold);
     
     private:
         bool alive;
@@ -54,4 +59,5 @@ class Hero {
         int level;
         int hp;
         int atkdmg;
+        int gold;
 };

@@ -34,17 +34,17 @@ string Enemy::getName() const
     return name;
 }
 
-int Enemy::getXp()
+int Enemy::getXp() const
 {
     return xp;
 }
 
-int Enemy::getHp()
+int Enemy::getHp() const
 {
     return hp;
 }
 
-int Enemy::getAtkDmg()
+int Enemy::getAtkDmg() const
 {
     return atkdmg;
 }
