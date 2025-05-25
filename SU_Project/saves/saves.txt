@@ -1,2 +1,3 @@
 
-magnus 366 4 16 29 9574 Plasma Dagger 12 1 30
+magnus 500 2 6 3 0 Fists 0 1 9991
+Thor 500 2 6 3 0 Fists 0 1 9991

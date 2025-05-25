@@ -13,3 +13,6 @@ file(GLOB SOURCES "src/*.cpp")
 
 # Create the executable
 add_executable(su_game ${SOURCES})
+
+# Link SQLite3 library
+target_link_libraries(su_game sqlite3)
