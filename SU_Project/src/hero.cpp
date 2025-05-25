@@ -9,14 +9,24 @@
 Hero::Hero(const string& name)
     //Initialiserings listen bruges til at initialisere klassens
     //datafelter før konstruktørens krop kører
-    : name(name), xp(0), level(1), hp(10), atkdmg(2) , gold(0), alive(true){}    
+    : name(name), xp(0), level(1), hp(10), atkdmg(2) , gold(0), alive(true),
+    weapon("Fists", 0, 1, 9999){}    
 
-void Hero::attack(Enemy &enemy)
-{
-    cout << name << " attacks " << enemy.getName() << " and deals " 
-    << getAtkDmg() << " damage!" << endl;
-    enemy.takeDamage(getAtkDmg()); 
-}
+    void Hero::attack(Enemy &enemy)
+    {
+        int totalDmg = getAtkDmg();
+        cout << name << " attacks " << enemy.getName() << " with " << weapon.getName()
+             << " and deals " << totalDmg << " damage!" << endl;
+    
+        enemy.takeDamage(totalDmg);
+        weapon.weaponUse();
+    
+        if (weapon.isBroke()) {
+            cout << "Your " << weapon.getName() << " broke!" << endl;
+            weapon = Weapon("Fists", 0, 1, 9999); // fallback
+        }
+    }
+    
 
 void Hero::takeDamage(int dmg)
 {
@@ -67,7 +77,9 @@ void Hero::saveCharacter() const
         if (currentName == name) {
             // Erstat den eksisterende linje med opdateret version
             std::ostringstream newLine;
-            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold;
+            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold << " "
+            << weapon.getName() << " " << weapon.getDmg() << " "
+            << weapon.getStrMod() << " " << weapon.getDur();
             lines.push_back(newLine.str());
             found = true;
         } else {
@@ -102,9 +114,10 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
             //npos er et specielt konstant tal i c++ som signalere "ikke fundet" i forbindelse med søgning i tekststrenge.
         {
             istringstream iss(line); //input string stream
-            int xp, level, hp, atkdmg, gold;
-            string newName;
-            iss >>newName >> xp >> level >> hp >> atkdmg >> gold; //fungerer som cin, sætter variablerne til dem fra linjen
+            int xp, level, hp, atkdmg, gold, baseDmg, strMod, durability;
+            string newName, weaponName;
+
+            iss >> newName >> xp >> level >> hp >> atkdmg >> gold >> weaponName >> baseDmg >> strMod >> durability;
 
             Hero hero(newName);
             hero.setXp(xp);
@@ -112,6 +125,10 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
             hero.setHp(hp);
             hero.setAtkDmg(atkdmg);
             hero.setGold(gold);
+
+            // Set weapon
+            Weapon loadedWeapon(weaponName, baseDmg, strMod, durability);
+            hero.setWeapon(loadedWeapon);
             return hero;
         }
     }
@@ -151,10 +168,12 @@ void Hero::printStats() const {
     cout << "Level:   " << level << endl;
     cout << "XP:      " << xp << endl;
     cout << "HP:      " << hp << endl;
-    cout << "Attack:  " << atkdmg << endl;
     cout << "Gold:    " << gold << endl;
+    cout << "Weapon:  " << weapon.getName() << endl;
+    cout << "Total Atk: " << getAtkDmg() << endl;
     cout << "===================\n\n";
 }
+
 
 
 bool Hero::isAlive() const
@@ -184,7 +203,8 @@ int Hero::getHp() const
 
 int Hero::getAtkDmg() const
 {
-    return atkdmg;
+    return (weapon.getStrMod()*atkdmg) + weapon.getDmg();
+    
 }
 
 int Hero::getGold() const
@@ -217,3 +237,12 @@ void Hero::setGold(int newGold)
     gold = newGold;
 }
 
+void Hero::setWeapon(const Weapon& w)
+{
+    weapon = w;
+}
+
+Weapon Hero::getweapon() const
+{
+    return weapon;
+}

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "weapon.hpp"
 using namespace std;
 
 class Hero {
@@ -51,6 +52,10 @@ class Hero {
     void setAtkDmg(int newAtkDmg);
 
     void setGold(int newGold);
+
+    void setWeapon(const Weapon& w);
+
+    Weapon getweapon() const;
     
     private:
         bool alive;
@@ -60,4 +65,6 @@ class Hero {
         int hp;
         int atkdmg;
         int gold;
+        Weapon weapon;
+
 };

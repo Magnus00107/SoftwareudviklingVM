@@ -7,10 +7,11 @@
 #include <sstream>
 #include <string>
 #include <cavefactory.hpp>
-
+#include <weapon.hpp>
 using namespace std;
 
 bool inCave = false;
+int cavesCompleted = 0;
 void game(Hero &hero);
 void fight(Hero &hero, Enemy &enemy);
 void mainMenu();
@@ -24,6 +25,19 @@ vector<Enemy> enemies =
     Enemy ("Sneaky Smuggler", 6, 2, 200, true),
     Enemy ("Fiend", 15, 5, 800, true),
     Enemy ("Pirate Captain", 5, 8, 1500, true)
+};
+
+std::vector<Weapon> weapons = {
+    Weapon("Plasma Dagger",      12, 1, 30),
+    Weapon("Neon Baton",         6,  2, 25),
+    Weapon("Ion Saber",         20, 1, 40),
+    Weapon("Graviton Hammer",   15, 3, 35),
+    Weapon("Laser Whip",         5, 4, 20),
+    Weapon("Photon Blade",      25, 1, 30),
+    Weapon("EMP Gauntlet",       0, 5, 15),
+    Weapon("Quantum Spear",     18, 2, 28),
+    Weapon("Stellar Katana",    30, 2, 50),
+    Weapon("Void Rifle",        10, 3, 10)
 };
 
 #include <limits> // required for std::numeric_limits
@@ -63,8 +77,8 @@ void fight(Hero &hero, Enemy &enemy)
         hero.changeXP(enemy.getXp());
         if (inCave == true)
         {
+            cavesCompleted ++;
             cave(hero);
-
         }
         else
         {
@@ -150,6 +164,16 @@ void cave(Hero &hero)
         cout << currentCave.name << " has been conquered" << endl;
         cout << hero.getName() << " has been awarded " << currentCave.goldReward << " gold" << endl;
         hero.setGold(hero.getGold()+currentCave.goldReward);
+
+        if (cavesCompleted < weapons.size())
+        {
+            cout << "Weapon: " << weapons[cavesCompleted].getName() << " has been awarded." << endl;
+            hero.setWeapon(weapons[cavesCompleted]);
+        }
+        else
+        {
+            cout << "You already have the most OP weapon." << endl;
+        }        
         inCave = false;
         game(hero);
     }
@@ -223,6 +247,9 @@ void mainMenu()
 }
 
 //Implement function to remove caves
+//Implement function to count how many enemies each hero has defeated
+//Implement function to count how many kills a hero has commited pr weapon
+//For each weapon show many enemies each hero has killed.
 
 int main()
 {
