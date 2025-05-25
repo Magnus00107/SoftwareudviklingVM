@@ -1,3 +1,3 @@
 
-magnus 500 2 6 3 0 Fists 0 1 9991
 Thor 500 2 6 3 0 Fists 0 1 9991
+magnus 1600 2 4 3 0 Fists 0 1 9992
