@@ -2,16 +2,21 @@
 #include <vector>
 #include "hero.hpp"
 #include "enemy.hpp"
+#include "enemyfactory.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
-
+#include <cavefactory.hpp>
+#include <weapon.hpp>
+#include <sqlite3.h>
 using namespace std;
 
-bool isFighting;
+bool inCave = false;
+int cavesCompleted = 0;
 void game(Hero &hero);
 void fight(Hero &hero, Enemy &enemy);
 void mainMenu();
+void cave(Hero &hero);
 
 vector<Enemy> enemies =
 {
@@ -23,11 +28,39 @@ vector<Enemy> enemies =
     Enemy ("Pirate Captain", 5, 8, 1500, true)
 };
 
+std::vector<Weapon> weapons = {
+    Weapon("Plasma Dagger",      12, 1, 30),
+    Weapon("Neon Baton",         6,  2, 25),
+    Weapon("Ion Saber",         20, 1, 40),
+    Weapon("Graviton Hammer",   15, 3, 35),
+    Weapon("Laser Whip",         5, 4, 20),
+    Weapon("Photon Blade",      25, 1, 30),
+    Weapon("EMP Gauntlet",       0, 5, 15),
+    Weapon("Quantum Spear",     18, 2, 28),
+    Weapon("Stellar Katana",    30, 2, 50),
+    Weapon("Void Rifle",        10, 3, 10)
+};
+
 #include <limits> // required for std::numeric_limits
+
+void recordKill(const Hero& hero, const Enemy& enemy) {
+    sqlite3* db;
+    if (sqlite3_open("game.db", &db) == SQLITE_OK) {
+        std::ostringstream sql;
+        sql << "INSERT INTO kills (hero_name, weapon_name, enemy_name) VALUES ('"
+            << hero.getName() << "', '"
+            << hero.getWeapon().getName() << "', '"
+            << enemy.getName() << "');";
+
+        sqlite3_exec(db, sql.str().c_str(), nullptr, nullptr, nullptr);
+        sqlite3_close(db);
+        cout << "Kill logged to DB\n";
+    }
+}
+
 
 void fight(Hero &hero, Enemy &enemy)
 {
-    isFighting = true;
     while (hero.isAlive() && enemy.isAlive())
     {
         //std::cout << hero.getName() << " attacks " << enemy.getName() << std::endl;
@@ -52,13 +85,25 @@ void fight(Hero &hero, Enemy &enemy)
         std::cout << hero.getName() << " has been defeated!" << std::endl;
         std::cout << "!!GAME OVER!!" << std::endl;
         hero.deleteCharacter();
+        inCave = false;
         mainMenu();
     }
     else
     {
         std::cout << enemy.getName() << " has been defeated!!" << std::endl;
         hero.changeXP(enemy.getXp());
-        game(hero);
+        hero.saveCharacter();
+        recordKill(hero, enemy);
+
+        if (inCave == true)
+        {
+            cavesCompleted ++;
+            cave(hero);
+        }
+        else
+        {
+            game(hero);
+        }
     }
 }
 
@@ -66,23 +111,92 @@ void fight(Hero &hero, Enemy &enemy)
 void game(Hero &hero)
 {
     hero.printStats();
-    cout << " Choose an enemy to fight" << endl;
-    for (size_t i = 0; i < enemies.size(); i++)
+    cout << " Choose an enemy to fight or enter a cave for greater reward" << endl;
+    cout << "type <enemy> to face individual enemies or type <cave> to enter a cave" << endl;
+    string choice;
+    cin >> choice;
+    if (choice == "enemy")
     {
-        if (enemies[i].isAlive() == true)
+        for (size_t i = 0; i < enemies.size(); i++)
         {
-            cout << i+1 << ". " << enemies[i].getName() << endl;
+            if (enemies[i].isAlive() == true)
+            {
+                cout << i+1 << ". " << enemies[i].getName() << endl;
+            }
         }
+        std::cout << "Enter your choice or -1 save to save and exit game";
+        int choice;
+        std::cin >> choice;
+        if (choice == -1)
+        {
+            hero.saveCharacter();
+            exit(0);
+        }
+        fight(hero, enemies[choice-1]);
     }
-    std::cout << "Enter your choice or -1 save to save and exit game";
-    int choice;
-    std::cin >> choice;
-    if (choice == -1)
+    else if (choice == "cave")
     {
-        hero.saveCharacter();
-        exit(0);
+        cave(hero);
     }
-    fight(hero, enemies[choice-1]);
+}
+
+void cave(Hero &hero)
+{
+    static Cavefactory::Cave currentCave;
+    if (inCave == false)
+    {
+        std::vector<Cavefactory::Cave> caves;
+        caves.push_back(Cavefactory::createCave(hero, "Smugglers Den"));
+        caves.push_back(Cavefactory::createCave(hero, "Fiends Den"));
+        caves.push_back(Cavefactory::createCave(hero, "Pirates Cove"));
+    
+        // Show cave names
+        std::cout << "Available caves:\n";
+        for (size_t i = 0; i < caves.size(); ++i) {
+            std::cout << i + 1 << ". " << caves[i].name << " (" << caves[i].enemies.size() << " enemies, "
+                    << caves[i].goldReward << " gold reward)\n";
+        }
+    
+        std::cout << "Enter number to explore: ";
+        int caveChoice;
+        std::cin >> caveChoice;
+    
+        if (caveChoice < 1 || caveChoice > caves.size())
+        {
+            cout << "Invalid cave choice" << endl;
+            return;
+        }
+
+        currentCave = caves[caveChoice - 1];
+        cout << "Entering " << currentCave.name << "...\n";
+        inCave = true;
+        cave(hero);
+    }
+    else if (inCave == true)
+    {
+        for (Enemy &e : currentCave.enemies)
+        {
+            if (e.isAlive() == true)
+            {
+                fight(hero, e);
+            }
+        }
+        cout << currentCave.name << " has been conquered" << endl;
+        cout << hero.getName() << " has been awarded " << currentCave.goldReward << " gold" << endl;
+        hero.setGold(hero.getGold()+currentCave.goldReward);
+
+        if (cavesCompleted < weapons.size())
+        {
+            cout << "Weapon: " << weapons[cavesCompleted].getName() << " has been awarded." << endl;
+            hero.setWeapon(weapons[cavesCompleted]);
+        }
+        else
+        {
+            cout << "You already have the most OP weapon." << endl;
+        }        
+        inCave = false;
+        game(hero);
+    }
 }
 
 void saves()
@@ -129,11 +243,54 @@ void newGame()
     game(hero);
 }
 
+void analyzeMenu() {
+    sqlite3* db;
+    if (sqlite3_open("game.db", &db) != SQLITE_OK) {
+        std::cerr << "Failed to open DB\n";
+        return;
+    }
+
+    cout << "1. Show all kills\n";
+    cout << "2. Show kills per hero\n";
+    cout << "3. Show kills per weapon per hero\n";
+    cout << "4. Show heroes in alphabetic order\n";
+    int choice;
+    cin >> choice;
+
+    const char* sql = nullptr;
+    switch (choice) {
+        case 1:
+            sql = "SELECT * FROM kills;";
+            break;
+        case 2:
+            sql = "SELECT hero_name, COUNT(*) as kills FROM kills GROUP BY hero_name;";
+            break;
+        case 3:
+            sql = "SELECT hero_name, weapon_name, COUNT(*) as kills FROM kills GROUP BY hero_name, weapon_name;";
+            break;
+        case 4:
+            sql = "SELECT DISTINCT hero_name FROM kills ORDER BY hero_name ASC;";
+        default:
+            cout << "Invalid choice\n";
+            sqlite3_close(db);
+            return;
+    }
+
+    sqlite3_exec(db, sql, [](void*, int cols, char** vals, char** colNames) {
+        for (int i = 0; i < cols; ++i)
+            std::cout << colNames[i] << ": " << (vals[i] ? vals[i] : "NULL") << "  ";
+        std::cout << "\n";
+        return 0;
+    }, nullptr, nullptr);
+
+    sqlite3_close(db);
+}
+
 void mainMenu()
 {
     int input;
     cout << "Shatter Field" << endl;
-    cout << "Enter 1 for a list of saved games or enter 2 to start a new game" << endl;
+    cout << "Enter 1 for a list of saved games or enter 2 to start a new game or 3 for Analyze Menu" << endl;
     cin >> input;
     switch (input)
     {
@@ -146,13 +303,20 @@ void mainMenu()
             newGame();
             break;
         
+        case 3:
+            analyzeMenu();
+            break;
+
         default:
             cout << "Wrong input" << endl;
             break;
     }
 }
 
-
+//Implement function to remove caves
+//Implement function to count how many enemies each hero has defeated
+//Implement function to count how many kills a hero has commited pr weapon
+//For each weapon show many enemies each hero has killed.
 
 int main()
 {

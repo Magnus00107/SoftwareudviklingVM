@@ -1,4 +1,6 @@
+#pragma once
 #include <string>
+#include "weapon.hpp"
 using namespace std;
 
 class Hero {
@@ -30,13 +32,15 @@ class Hero {
 
     string getName() const;
 
-    int getLevel();
+    int getLevel() const;
 
-    int getXp();
+    int getXp() const;
 
-    int getHp();
+    int getHp() const;
 
-    int getAtkDmg();
+    int getAtkDmg() const;
+
+    int getGold() const;
 
     //Setter functions:
     void setLevel(int newLevel);
@@ -46,6 +50,12 @@ class Hero {
     void setHp(int newHp);
 
     void setAtkDmg(int newAtkDmg);
+
+    void setGold(int newGold);
+
+    void setWeapon(const Weapon& w);
+
+    Weapon getWeapon() const;
     
     private:
         bool alive;
@@ -54,4 +64,8 @@ class Hero {
         int level;
         int hp;
         int atkdmg;
+        int gold;
+        Weapon weapon;
+
+
 };

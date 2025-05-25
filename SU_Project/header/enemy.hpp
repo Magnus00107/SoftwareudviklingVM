@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 using namespace std;
 
@@ -15,11 +16,11 @@ class Enemy {
         //Getter functions:
         string getName() const;
 
-        int getXp();
+        int getXp() const;
 
-        int getHp();
+        int getHp() const;
 
-        int getAtkDmg();
+        int getAtkDmg() const;
 
     private:
         string name;
