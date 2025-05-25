@@ -111,32 +111,37 @@ void fight(Hero &hero, Enemy &enemy)
 void game(Hero &hero)
 {
     hero.printStats();
-    cout << " Choose an enemy to fight or enter a cave for greater reward" << endl;
-    cout << "type <enemy> to face individual enemies or type <cave> to enter a cave" << endl;
-    string choice;
-    cin >> choice;
-    if (choice == "enemy")
-    {
-        for (size_t i = 0; i < enemies.size(); i++)
-        {
-            if (enemies[i].isAlive() == true)
+    std::cout << "Choose an action:\n";
+    std::cout << "1. Fight an enemy\n";
+    std::cout << "2. Enter a cave (greater reward)\n";
+    std::cout << "3. Save and return to main menu\n";
+    std::cout << "Enter number (1-3): ";
+    int input;
+    cin >> input;
+
+    switch(input){
+        case 1:
+            for (size_t i = 0; i < enemies.size(); i++)
             {
-                cout << i+1 << ". " << enemies[i].getName() << endl;
+                if (enemies[i].isAlive() == true)
+                {
+                    cout << i+1 << ". " << enemies[i].getName() << endl;
+                }
             }
-        }
-        std::cout << "Enter your choice or -1 save to save and exit game";
-        int choice;
-        std::cin >> choice;
-        if (choice == -1)
-        {
+            std::cout << "Enter your choice";
+            int choice;
+            std::cin >> choice;
+            fight(hero, enemies[choice-1]);
+            break;
+
+        case 2:
+            cave(hero);
+            break;
+
+        case 3:
             hero.saveCharacter();
-            exit(0);
-        }
-        fight(hero, enemies[choice-1]);
-    }
-    else if (choice == "cave")
-    {
-        cave(hero);
+            mainMenu();
+            break;
     }
 }
 
@@ -245,52 +250,68 @@ void newGame()
 
 void analyzeMenu() {
     sqlite3* db;
-    if (sqlite3_open("game.db", &db) != SQLITE_OK) {
-        std::cerr << "Failed to open DB\n";
-        return;
-    }
 
-    cout << "1. Show all kills\n";
-    cout << "2. Show kills per hero\n";
-    cout << "3. Show kills per weapon per hero\n";
-    cout << "4. Show heroes in alphabetic order\n";
-    int choice;
-    cin >> choice;
-
-    const char* sql = nullptr;
-    switch (choice) {
-        case 1:
-            sql = "SELECT * FROM kills;";
-            break;
-        case 2:
-            sql = "SELECT hero_name, COUNT(*) as kills FROM kills GROUP BY hero_name;";
-            break;
-        case 3:
-            sql = "SELECT hero_name, weapon_name, COUNT(*) as kills FROM kills GROUP BY hero_name, weapon_name;";
-            break;
-        case 4:
-            sql = "SELECT DISTINCT hero_name FROM kills ORDER BY hero_name ASC;";
-        default:
-            cout << "Invalid choice\n";
-            sqlite3_close(db);
+    while (true) {
+        db = nullptr;
+        if (sqlite3_open("game.db", &db) != SQLITE_OK) {
+            std::cerr << "Failed to open DB\n";
             return;
+        }
+
+        std::cout << "\n=== Analysis Menu ===\n";
+        std::cout << "1. Show all kills\n";
+        std::cout << "2. Show kills per hero\n";
+        std::cout << "3. Show kills per weapon per hero\n";
+        std::cout << "4. Show heroes in alphabetic order\n";
+        std::cout << "5. Back to main menu\n";
+        std::cout << "Enter your choice: ";
+
+        int choice;
+        std::cin >> choice;
+
+        const char* sql = nullptr;
+        switch (choice) {
+            case 1:
+                sql = "SELECT * FROM kills;";
+                break;
+            case 2:
+                sql = "SELECT hero_name, COUNT(*) as kills FROM kills GROUP BY hero_name;";
+                break;
+            case 3:
+                sql = "SELECT hero_name, weapon_name, COUNT(*) as kills FROM kills GROUP BY hero_name, weapon_name;";
+                break;
+            case 4:
+                sql = "SELECT DISTINCT hero_name FROM kills ORDER BY hero_name DESC;";
+                break;
+            case 5:
+                sqlite3_close(db);
+                mainMenu();
+                break;
+            default:
+                std::cout << "Invalid choice\n";
+                sqlite3_close(db);
+                continue;
+        }
+
+        sqlite3_exec(db, sql, [](void*, int cols, char** vals, char** colNames) {
+            for (int i = 0; i < cols; ++i)
+                std::cout << colNames[i] << ": " << (vals[i] ? vals[i] : "NULL") << "  ";
+            std::cout << "\n";
+            return 0;
+        }, nullptr, nullptr);
+
+        sqlite3_close(db);
     }
-
-    sqlite3_exec(db, sql, [](void*, int cols, char** vals, char** colNames) {
-        for (int i = 0; i < cols; ++i)
-            std::cout << colNames[i] << ": " << (vals[i] ? vals[i] : "NULL") << "  ";
-        std::cout << "\n";
-        return 0;
-    }, nullptr, nullptr);
-
-    sqlite3_close(db);
 }
 
 void mainMenu()
 {
     int input;
     cout << "Shatter Field" << endl;
-    cout << "Enter 1 for a list of saved games or enter 2 to start a new game or 3 for Analyze Menu" << endl;
+    cout << "1. List of saves" << endl;
+    cout << "2. Start new game" << endl;
+    cout << "3. Analyzer Menu" << endl;
+    cout << "4. Exit game" << endl;
     cin >> input;
     switch (input)
     {
@@ -306,7 +327,9 @@ void mainMenu()
         case 3:
             analyzeMenu();
             break;
-
+        case 4:
+            exit(0);
+            break;
         default:
             cout << "Wrong input" << endl;
             break;

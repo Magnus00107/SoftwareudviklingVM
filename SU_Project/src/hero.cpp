@@ -203,7 +203,7 @@ int Hero::getHp() const
 
 int Hero::getAtkDmg() const
 {
-    return (weapon.getStrMod()*atkdmg) + weapon.getDmg();
+    return abs(weapon.getStrMod()*atkdmg) + weapon.getDmg();
     
 }
 
