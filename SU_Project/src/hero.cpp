@@ -77,7 +77,9 @@ void Hero::saveCharacter() const
         if (currentName == name) {
             // Erstat den eksisterende linje med opdateret version
             std::ostringstream newLine;
-            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold;
+            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold << " "
+            << weapon.getName() << " " << weapon.getDmg() << " "
+            << weapon.getStrMod() << " " << weapon.getDur();
             lines.push_back(newLine.str());
             found = true;
         } else {
@@ -112,9 +114,10 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
             //npos er et specielt konstant tal i c++ som signalere "ikke fundet" i forbindelse med søgning i tekststrenge.
         {
             istringstream iss(line); //input string stream
-            int xp, level, hp, atkdmg, gold;
-            string newName;
-            iss >>newName >> xp >> level >> hp >> atkdmg >> gold; //fungerer som cin, sætter variablerne til dem fra linjen
+            int xp, level, hp, atkdmg, gold, baseDmg, strMod, durability;
+            string newName, weaponName;
+
+            iss >> newName >> xp >> level >> hp >> atkdmg >> gold >> weaponName >> baseDmg >> strMod >> durability;
 
             Hero hero(newName);
             hero.setXp(xp);
@@ -122,6 +125,10 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
             hero.setHp(hp);
             hero.setAtkDmg(atkdmg);
             hero.setGold(gold);
+
+            // Set weapon
+            Weapon loadedWeapon(weaponName, baseDmg, strMod, durability);
+            hero.setWeapon(loadedWeapon);
             return hero;
         }
     }
