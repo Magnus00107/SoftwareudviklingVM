@@ -8,7 +8,7 @@ int getRandomInt(int min, int max) {
 }
 
 
-vector<Enemy> EnemyFactory::createEnemy(int heroLevel, int enemyNr)
+vector<Enemy> EnemyFactory::createEnemy(int heroLevel)
 {
     vector<string> names = {"Thief", "Smuggler", "Fiend", "Backstaber", "Mutant", "Pirate"};
     vector<string> modifiers = {"Recruit", "Amateur", "Seasoned", "Trained", "Expert", "OG"};
@@ -17,11 +17,11 @@ vector<Enemy> EnemyFactory::createEnemy(int heroLevel, int enemyNr)
     string name, modifier;
     int hp, atkdmg, xp;
 
-    for (int i=0; i <= enemyNr; i++)
+    for (int i=0; i <= getRandomInt(2, 5); i++)
     {
 
         //Name randomizer
-        name = names[getRandomInt(0,names.size())];
+        name = names[getRandomInt(0,names.size()-1)];
         if (heroLevel <= 3)
         {
             hp = getRandomInt(4,8);

@@ -9,7 +9,7 @@
 Hero::Hero(const string& name)
     //Initialiserings listen bruges til at initialisere klassens
     //datafelter før konstruktørens krop kører
-    : name(name), xp(0), level(1), hp(10), atkdmg(2) ,alive(true){}    
+    : name(name), xp(0), level(1), hp(10), atkdmg(2) , gold(0), alive(true){}    
 
 void Hero::attack(Enemy &enemy)
 {
@@ -67,7 +67,7 @@ void Hero::saveCharacter() const
         if (currentName == name) {
             // Erstat den eksisterende linje med opdateret version
             std::ostringstream newLine;
-            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg;
+            newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold;
             lines.push_back(newLine.str());
             found = true;
         } else {
@@ -79,7 +79,7 @@ void Hero::saveCharacter() const
     if (!found) {
         // Tilføj ny hero til sidst
         std::ostringstream newLine;
-        newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg;
+        newLine << name << " " << xp << " " << level << " " << hp << " " << atkdmg << " " << gold;
         lines.push_back(newLine.str());
     }
 
@@ -102,15 +102,16 @@ Hero Hero::loadFromFile(const string name) //fordi den returnere typen Hero og H
             //npos er et specielt konstant tal i c++ som signalere "ikke fundet" i forbindelse med søgning i tekststrenge.
         {
             istringstream iss(line); //input string stream
-            int xp, level, hp, atkdmg;
+            int xp, level, hp, atkdmg, gold;
             string newName;
-            iss >>newName >> xp >> level >> hp >> atkdmg; //fungerer som cin, sætter variablerne til dem fra linjen
+            iss >>newName >> xp >> level >> hp >> atkdmg >> gold; //fungerer som cin, sætter variablerne til dem fra linjen
 
             Hero hero(newName);
             hero.setXp(xp);
             hero.setLevel(level);
             hero.setHp(hp);
             hero.setAtkDmg(atkdmg);
+            hero.setGold(gold);
             return hero;
         }
     }
@@ -145,13 +146,14 @@ void Hero::deleteCharacter() const
 }
 
 void Hero::printStats() const {
-    std::cout << "\n=== Hero Stats ===\n";
-    std::cout << "Name:    " << name << std::endl;
-    std::cout << "Level:   " << level << std::endl;
-    std::cout << "XP:      " << xp << std::endl;
-    std::cout << "HP:      " << hp << std::endl;
-    std::cout << "Attack:  " << atkdmg << std::endl;
-    std::cout << "===================\n\n";
+    cout << "\n=== Hero Stats ===\n";
+    cout << "Name:    " << name << endl;
+    cout << "Level:   " << level << endl;
+    cout << "XP:      " << xp << endl;
+    cout << "HP:      " << hp << endl;
+    cout << "Attack:  " << atkdmg << endl;
+    cout << "Gold:    " << gold << endl;
+    cout << "===================\n\n";
 }
 
 
@@ -165,24 +167,29 @@ string Hero::getName() const
     return name;
 }
 
-int Hero::getLevel()
+int Hero::getLevel() const
 {
     return level;
 }
 
-int Hero::getXp()
+int Hero::getXp() const
 {
     return xp;
 }
 
-int Hero::getHp()
+int Hero::getHp() const
 {
     return hp;
 }
 
-int Hero::getAtkDmg()
+int Hero::getAtkDmg() const
 {
     return atkdmg;
+}
+
+int Hero::getGold() const
+{
+    return gold;
 }
 
 void Hero::setLevel(int newLevel)
@@ -203,5 +210,10 @@ void Hero::setHp(int newHp)
 void Hero::setAtkDmg(int newAtkDmg)
 {
     atkdmg = newAtkDmg;
+}
+
+void Hero::setGold(int newGold)
+{
+    gold = newGold;
 }
 

@@ -6,5 +6,6 @@
 
 class EnemyFactory {
     public: 
-        static vector<Enemy> createEnemy(int heroLevel, int enemyNr);
+        static vector<Enemy> createEnemy(int heroLevel);
+
 };
