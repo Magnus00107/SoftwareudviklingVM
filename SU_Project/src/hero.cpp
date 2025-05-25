@@ -242,7 +242,7 @@ void Hero::setWeapon(const Weapon& w)
     weapon = w;
 }
 
-Weapon Hero::getweapon() const
+Weapon Hero::getWeapon() const
 {
     return weapon;
 }

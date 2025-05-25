@@ -55,7 +55,7 @@ class Hero {
 
     void setWeapon(const Weapon& w);
 
-    Weapon getweapon() const;
+    Weapon getWeapon() const;
     
     private:
         bool alive;
@@ -66,5 +66,6 @@ class Hero {
         int atkdmg;
         int gold;
         Weapon weapon;
+
 
 };
